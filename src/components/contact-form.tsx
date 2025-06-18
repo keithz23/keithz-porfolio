@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Send } from "lucide-react"
 
@@ -29,20 +28,31 @@ export function ContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const res = await fetch("https://formspree.io/f/xdkzdykj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      })
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    })
+      if (res.ok) {
+        alert("Message sent successfully!")
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        })
+      } else {
+        alert("Failed to send message.")
+      }
+    } catch (error) {
+      alert("An error occurred. Please try again.")
+    }
+
     setIsSubmitting(false)
-
-    // Show success message (in a real app, you'd use a toast or alert)
-    alert("Message sent successfully!")
   }
 
   return (
@@ -112,7 +122,11 @@ export function ContactForm() {
         />
       </div>
 
-      <Button type="submit" className="w-full bg-rose-500 hover:bg-rose-600 text-white" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className="w-full bg-rose-500 hover:bg-rose-600 text-white"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <>
             <svg
